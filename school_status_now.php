@@ -76,16 +76,20 @@
 說明：本頁面建置於市網中心，檢測各校與市網介接之L3路由設備
 <br>檢測方式：每隔60秒ping 1 次，ping回應時間高於100ms即為ping loss
 <br>異常定義：最近連續兩次ping皆loss則為異常，顯示紅色
-
-
 </div>
 <br><br>
+
+
+<button type="button" id="toggle" onclick="changeMode()">顯示異常</button> 
+<input type="text" id="search" onkeyup="keyFilter()" placeholder="快速搜尋">
+<br>
+<div class="container" id="container">
 
 <?php
 $DBNAME = $config['db_name'];
 $DBUSER = $config['db_user'];
 $DBPASS = $config['db_pass'];
-$DBHOST = $config['db_host']
+$DBHOST = $config['db_host'];
 
 try
 {
@@ -149,6 +153,51 @@ catch(Exception $e)
 }
 
 ?>
+
+</div>
+
+
+
+
+<script>
+    function keyFilter() {
+      var input, filter, container, div, i;
+      input = document.getElementById("search");
+      filter = input.value.toUpperCase();
+      container = document.getElementById("container");
+      div = container.getElementsByTagName("div");
+    
+      for (i = 0; i < div.length; i++) {
+        if (div[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            div[i].style.display = "";
+          } else {
+            div[i].style.display = "none";
+          }
+        }
+    }
+
+    function changeMode(){
+        var btn, div, i;
+        btn = document.getElementById("toggle");
+        div = document.getElementsByClassName("device_up");
+        if (btn.style.backgroundColor == ""){
+            for (i = 0; i < div.length; i++){
+                div[i].style.display = "none";
+            } 
+            btn.style.backgroundColor = "RED";
+            btn.innerHTML = "顯示全部";
+        } else {
+            for (i = 0; i < div.length; i++){
+                div[i].style.display = "";
+            } 
+            btn.style.backgroundColor = "";
+            btn.innerHTML = "顯示異常";
+        } 
+    }
+
+
+    </script>
+
 
 
 </body>
