@@ -87,32 +87,33 @@ $DBUSER = $config['db_user'];
 $DBPASS = $config['db_pass'];
 $DBHOST = $config['db_host'];
 
-try
-{
+try {
     //查詢 devices 資料表中所有設備的 id,名稱 
-    $pdo      = new PDO("mysql:host=".$DBHOST.";dbname=".$DBNAME, $DBUSER, $DBPASS);
+    $pdo = new PDO("mysql:host=".$DBHOST.";dbname=".$DBNAME, $DBUSER, $DBPASS);
     $pdo->query("set names utf8");
-    $sql      = "select device_id,sysName from devices order by sysName";
-    $query    = $pdo->query($sql);
+    $sql = "select device_id,sysName from devices order by sysName";
+    $query = $pdo->query($sql);
+
     //從 device_id 去比對 device_perf 中最後一筆 ping 的資料
-    while ($datainfo = $query->fetch())
-    {
-        $sql2      = "select devices.device_id,devices.features,devices.sysName,devices.hostname,device_perf.timestamp,device_perf.loss  from devices JOIN device_perf on devices.device_id=device_perf.device_id  where  device_perf.device_id =". $datainfo['device_id']. " order by device_perf.timestamp desc,devices.sysName  limit 1;";
-        $query2    = $pdo->query($sql2);
+    while ($datainfo = $query->fetch()) {
+        $sql2 = "select devices.device_id,devices.features,devices.sysName,devices.hostname,device_perf.timestamp,device_perf.loss  from devices JOIN device_perf on devices.device_id=device_perf.device_id  where  device_perf.device_id =". $datainfo['device_id']. " order by device_perf.timestamp desc,devices.sysName  limit 1;";
+        $query2 = $pdo->query($sql2);
+
         //計算每一部裝置最近兩筆的 ping 資料
-        while ($datainfo2 = $query2->fetch())
-        {
-            $STH_SELECT = $pdo3->query("SELECT sum(loss) as sum_loss from(SELECT loss FROM device_perf  where device_id =".$datainfo['device_id'] ." order by device_perf.timestamp limit 2) as subquery");
-            $row =  $STH_SELECT->fetch();
-            $STH_SELECT = null;
+        while ($datainfo2 = $query2->fetch()) {
+            $query3 = $pdo->query("SELECT sum(loss) as sum_loss from(SELECT loss FROM device_perf  where device_id =".$datainfo['device_id'] ." order by device_perf.timestamp limit 2) as subquery");
+            $row = $query3->fetch();
+            $query3 = null;
             //echo $row['sum_loss'];
+
             //總和為 0 是正常
-            if ($row['sum_loss'] == 0){
+            if ($row['sum_loss'] == 0) {
                 $school_status="正常";
                 $div_class="device_up";
             }
+
             //總和 200 代表連續兩次 ping 失敗
-            if ($row['sum_loss'] >= 200){
+            if ($row['sum_loss'] >= 200) {
                 $school_status="異常";
                 $div_class="device_down";
             }
@@ -134,9 +135,7 @@ try
     }
     $query = null;
     $pdo = null;
-}
-catch(Exception $e)
-{
+} catch(Exception $e) {
     // 錯誤顯示
     echo $e->getMessage();
 }
