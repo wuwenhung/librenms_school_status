@@ -97,16 +97,14 @@ try
     //從 device_id 去比對 device_perf 中最後一筆 ping 的資料
     while ($datainfo = $query->fetch())
     {
-        $pdo2      = new PDO("mysql:host=".$DBHOST.";dbname=".$DBNAME, $DBUSER, $DBPASS);
         $sql2      = "select devices.device_id,devices.features,devices.sysName,devices.hostname,device_perf.timestamp,device_perf.loss  from devices JOIN device_perf on devices.device_id=device_perf.device_id  where  device_perf.device_id =". $datainfo['device_id']. " order by device_perf.timestamp desc,devices.sysName  limit 1;";
-        $query2    = $pdo2->query($sql2);
-        $datalist2 = $query2->fetchAll();
+        $query2    = $pdo->query($sql2);
         //計算每一部裝置最近兩筆的 ping 資料
-        foreach ($datalist2 as $datainfo2)
+        while ($datainfo2 = $query2->fetch())
         {
-            $pdo3      = new PDO("mysql:host=".$DBHOST.";dbname=".$DBNAME, $DBUSER, $DBPASS);
             $STH_SELECT = $pdo3->query("SELECT sum(loss) as sum_loss from(SELECT loss FROM device_perf  where device_id =".$datainfo['device_id'] ." order by device_perf.timestamp limit 2) as subquery");
             $row =  $STH_SELECT->fetch();
+            $STH_SELECT = null;
             //echo $row['sum_loss'];
             //總和為 0 是正常
             if ($row['sum_loss'] == 0){
@@ -132,7 +130,10 @@ try
             //echo "<br>電路編號：".$datainfo2['features'];
             echo "</div>";
         }
+        $query2 = null;
     }
+    $query = null;
+    $pdo = null;
 }
 catch(Exception $e)
 {
