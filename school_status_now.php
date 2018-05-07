@@ -94,9 +94,8 @@ try
     $pdo->query("set names utf8");
     $sql      = "select device_id,sysName from devices order by sysName";
     $query    = $pdo->query($sql);
-    $datalist = $query->fetchAll();
     //從 device_id 去比對 device_perf 中最後一筆 ping 的資料
-    foreach ($datalist as $datainfo)
+    while ($datainfo = $query->fetch())
     {
         $pdo2      = new PDO("mysql:host=".$DBHOST.";dbname=".$DBNAME, $DBUSER, $DBPASS);
         $sql2      = "select devices.device_id,devices.features,devices.sysName,devices.hostname,device_perf.timestamp,device_perf.loss  from devices JOIN device_perf on devices.device_id=device_perf.device_id  where  device_perf.device_id =". $datainfo['device_id']. " order by device_perf.timestamp desc,devices.sysName  limit 1;";
