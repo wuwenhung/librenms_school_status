@@ -70,8 +70,9 @@
 <div class="readme">
 說明：本頁面建置於市網中心，檢測各校與市網介接之 L3 路由設備
 <br>檢測方式：每隔 60 秒 ping 1 次，ping 回應時間高於 100ms 即為 ping loss
-<br>異常定義：最近連續兩次 ping 皆 loss 則為異常，顯示紅色
-<br>待確認定義： 最近一次 ping loss 為待確認，顯示黃綠色
+<br>正常：　最近連續兩次 ping 皆沒有loss 則為正常，顯示綠色 
+<br>待確認：最近連續兩次 ping 中有1次 loss 則為待確認，顯示淺黃色 
+<br>異常：　最近連續兩次 ping 皆 loss 則為異常，顯示紅色
 </div>
 <br><br>
 
